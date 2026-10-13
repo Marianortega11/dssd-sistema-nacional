@@ -1,0 +1,30 @@
+services:
+  - type: web
+    name: sistema-nacional
+    runtime: docker
+    plan: free
+    healthCheckPath: /actuator/health
+    envVars:
+      - key: DB_HOST
+        fromDatabase: { name: nacional-db, property: host }
+      - key: DB_PORT
+        fromDatabase: { name: nacional-db, property: port }
+      - key: DB_NAME
+        fromDatabase: { name: nacional-db, property: database }
+      - key: DB_USER
+        fromDatabase: { name: nacional-db, property: user }
+      - key: DB_PASSWORD
+        fromDatabase: { name: nacional-db, property: password }
+      - key: JWT_SECRET
+        generateValue: true
+      - key: ADMIN_PASSWORD
+        generateValue: true
+      - key: SISTEMA_PASSWORD
+        generateValue: true
+      - key: SEED_DEMO
+        value: "true"
+
+databases:
+  - name: nacional-db
+    plan: free
+    databaseName: nacional
