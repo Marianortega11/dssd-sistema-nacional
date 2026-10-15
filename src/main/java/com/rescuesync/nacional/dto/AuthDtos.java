@@ -12,7 +12,7 @@ public final class AuthDtos {
     public record LoginRequest(@NotBlank String username, @NotBlank String password) {
     }
 
-    public record TokenResponse(String accessToken, String tokenType, long expiresInSeconds, String rol, Long ongId) {
+    public record LoginResponse(String accessToken, String tokenType, long expiresInSeconds, String rol, Long ongId) {
     }
 
     public record RegistroOngRequest(
