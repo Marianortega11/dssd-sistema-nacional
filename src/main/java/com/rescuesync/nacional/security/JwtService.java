@@ -48,8 +48,10 @@ public class JwtService {
     /** Devuelve vacio si el token es invalido, esta vencido o fue alterado. */
     public Optional<AuthPrincipal> validar(String token) {
         try {
-            Claims c = Jwts.parser().verifyWith(key).build().parseSignedClaims(token).getPayload();
-            Number ongId = c.get("ongId", Number.class);
+            Claims c = Jwts.parser().verifyWith(key).build().parseSignedClaims(token).getPayload(); //devuelve los claim del payload
+            
+            Number ongId = c.get("ongId", Number.class); // puede ser null si es un usuario ADMIN o SISTEMA
+
             return Optional.of(new AuthPrincipal(c.getSubject(), Rol.valueOf(c.get("rol", String.class)),
                     ongId == null ? null : ongId.longValue()));
         } catch (JwtException | IllegalArgumentException e) {

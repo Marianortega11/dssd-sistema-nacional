@@ -27,10 +27,14 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws ServletException, IOException {
         String header = request.getHeader(HttpHeaders.AUTHORIZATION);
+        //hay que sacar del header la parte de "bearer"
         if (header != null && header.startsWith("Bearer ")) {
-            jwtService.validar(header.substring(7).trim()).ifPresent(p -> {
-                var auth = new UsernamePasswordAuthenticationToken(p, null,
-                        List.of(new SimpleGrantedAuthority("ROLE_" + p.getRol().name())));
+            jwtService.validar(header.substring(7).trim()).ifPresent(p ->
+            {
+                UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(
+                    p, // 1. principal: QUIÉN es → el AuthPrincipal (username, rol, ongId)
+                    null, // 2. credentials: con QUÉ se autenticó → null. Esto ya se hizo en jwtService.validar por lo que ya confiamos
+                    List.of(new SimpleGrantedAuthority("ROLE_" + p.getRol().name()))); // 3. authorities: QUÉ PUEDE hacer
                 SecurityContextHolder.getContext().setAuthentication(auth);
             });
         }
