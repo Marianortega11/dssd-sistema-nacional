@@ -1,6 +1,10 @@
 package com.rescuesync.nacional.domain;
 
 import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
@@ -9,10 +13,13 @@ import java.util.List;
 @Entity
 @Table(name = "compromiso",
         uniqueConstraints = @UniqueConstraint(name = "uk_compromiso_proyecto_ong", columnNames = {"proyecto_ref", "ong_id"}))
+@Getter
+@Setter
 public class Compromiso {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Setter(AccessLevel.NONE)
     private Long id;
 
     /** Referencia al proyecto/emergencia en el sistema local (ej. id de emergencia o de caso Bonita). */
@@ -28,27 +35,17 @@ public class Compromiso {
     private EstadoCompromiso estado = EstadoCompromiso.ACTIVO;
 
     @Column(nullable = false)
+    @Setter(AccessLevel.NONE)
     private Instant fechaCreacion = Instant.now();
 
     private Instant fechaLiberacion;
 
     @OneToMany(mappedBy = "compromiso", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @Setter(AccessLevel.NONE)
     private List<CompromisoItem> items = new ArrayList<>();
 
     public void agregarItem(CompromisoItem item) {
         item.setCompromiso(this);
         items.add(item);
     }
-
-    public Long getId() { return id; }
-    public String getProyectoRef() { return proyectoRef; }
-    public void setProyectoRef(String proyectoRef) { this.proyectoRef = proyectoRef; }
-    public Ong getOng() { return ong; }
-    public void setOng(Ong ong) { this.ong = ong; }
-    public EstadoCompromiso getEstado() { return estado; }
-    public void setEstado(EstadoCompromiso estado) { this.estado = estado; }
-    public Instant getFechaCreacion() { return fechaCreacion; }
-    public Instant getFechaLiberacion() { return fechaLiberacion; }
-    public void setFechaLiberacion(Instant fechaLiberacion) { this.fechaLiberacion = fechaLiberacion; }
-    public List<CompromisoItem> getItems() { return items; }
 }

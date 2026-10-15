@@ -35,7 +35,7 @@ public class JwtService {
     public String generar(Cuenta cuenta) {
         Instant ahora = Instant.now();
         var b = Jwts.builder()
-                .subject(cuenta.getUsername())
+                .subject(cuenta.getUsername().trim())
                 .claim("rol", cuenta.getRol().name())
                 .issuedAt(Date.from(ahora))
                 .expiration(Date.from(ahora.plus(duracion)));

@@ -3,7 +3,7 @@ services:
     image: postgres:17-alpine
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?Falta DB_PASSWORD en .env}
       POSTGRES_DB: nacional
     ports:
       - "5434:5432"
@@ -24,8 +24,10 @@ services:
       DB_PORT: 5432
       DB_NAME: nacional
       DB_USER: postgres
-      DB_PASSWORD: postgres
-      JWT_SECRET: ${JWT_SECRET:-local-secret-local-secret-local-secret-123}
+      DB_PASSWORD: ${DB_PASSWORD:?Falta DB_PASSWORD en .env}
+      JWT_SECRET: ${JWT_SECRET:?Falta JWT_SECRET en .env}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:?Falta ADMIN_PASSWORD en .env}
+      SISTEMA_PASSWORD: ${SISTEMA_PASSWORD:?Falta SISTEMA_PASSWORD en .env}
     depends_on:
       db:
         condition: service_healthy

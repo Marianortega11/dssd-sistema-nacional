@@ -1,10 +1,16 @@
 package com.rescuesync.nacional.domain;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import java.time.Instant;
 
 @Entity
+@Getter
+@Setter
 @Table(name = "ong")
+@NoArgsConstructor 
 public class Ong {
 
     @Id
@@ -32,16 +38,14 @@ public class Ong {
     @Column(nullable = false)
     private Instant fechaAlta = Instant.now();
 
-    public Long getId() { return id; }
-    public String getNombre() { return nombre; }
-    public void setNombre(String nombre) { this.nombre = nombre; }
-    public String getCuit() { return cuit; }
-    public void setCuit(String cuit) { this.cuit = cuit; }
-    public String getEmail() { return email; }
-    public void setEmail(String email) { this.email = email; }
-    public String getAliasLocal() { return aliasLocal; }
-    public void setAliasLocal(String aliasLocal) { this.aliasLocal = aliasLocal; }
-    public boolean isHabilitada() { return habilitada; }
-    public void setHabilitada(boolean habilitada) { this.habilitada = habilitada; }
-    public Instant getFechaAlta() { return fechaAlta; }
+    public Ong(String nombre, String cuit, String alias, String email) {
+        this.aliasLocal = alias;
+        this.cuit = cuit;
+        this.nombre = nombre;
+        this.email = email;
+        this.habilitada = false;
+        
+    }
+    
+
 }

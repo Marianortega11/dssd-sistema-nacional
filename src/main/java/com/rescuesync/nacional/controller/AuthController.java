@@ -24,7 +24,7 @@ public class AuthController {
 
     @Operation(summary = "Inicio de sesion", description = "Devuelve un JWT (Bearer) para usar en el resto de la API.")
     @PostMapping("/login")
-    public TokenResponse login(@Valid @RequestBody LoginRequest req) {
+    public LoginResponse login(@Valid @RequestBody LoginRequest req) {
         return auth.login(req);
     }
 

@@ -2,7 +2,6 @@ package com.rescuesync.nacional.service;
 
 import com.rescuesync.nacional.domain.Cuenta;
 import com.rescuesync.nacional.domain.Ong;
-import com.rescuesync.nacional.domain.Rol;
 import com.rescuesync.nacional.dto.AuthDtos.*;
 import com.rescuesync.nacional.exception.ApiException;
 import com.rescuesync.nacional.repository.CuentaRepository;
@@ -30,11 +29,11 @@ public class AuthService {
     }
 
     @Transactional(readOnly = true)
-    public TokenResponse login(LoginRequest req) {
+    public LoginResponse login(LoginRequest req) {
         Cuenta c = cuentas.findByUsername(req.username().trim())
                 .filter(x -> encoder.matches(req.password(), x.getPasswordHash()))
                 .orElseThrow(() -> new ApiException(HttpStatus.UNAUTHORIZED, "Credenciales invalidas"));
-        return new TokenResponse(jwt.generar(c), "Bearer", jwt.segundosDeVida(), c.getRol().name(),
+        return new LoginResponse(jwt.generar(c), "Bearer", jwt.segundosDeVida(), c.getRol().name(),
                 c.getOng() == null ? null : c.getOng().getId());
     }
 
@@ -44,7 +43,8 @@ public class AuthService {
         String username = req.username().trim();
         String cuit = Texto.soloDigitos(req.cuit());
         String alias = req.aliasLocal() == null || req.aliasLocal().isBlank() ? null : req.aliasLocal().trim();
-
+        String email = req.email().trim();
+        String nombre = req.nombre().trim();
         if (cuentas.existsByUsername(username)) {
             throw new ApiException(HttpStatus.CONFLICT, "El nombre de usuario ya esta en uso");
         }
@@ -55,22 +55,14 @@ public class AuthService {
             throw new ApiException(HttpStatus.CONFLICT, "El alias local ya esta asociado a otra ONG");
         }
 
-        Ong ong = new Ong();
-        ong.setNombre(req.nombre().trim());
-        ong.setCuit(cuit);
-        ong.setEmail(req.email().trim());
-        ong.setAliasLocal(alias);
-        ong.setHabilitada(false);
-        ong = ongs.save(ong);
+        Ong ong = new Ong(nombre,cuit,alias,email);
+        Cuenta cuenta = new Cuenta(username,encoder.encode(req.password()), ong);
 
-        Cuenta cuenta = new Cuenta();
-        cuenta.setUsername(username);
-        cuenta.setPasswordHash(encoder.encode(req.password()));
-        cuenta.setRol(Rol.ONG);
-        cuenta.setOng(ong);
+        ongs.save(ong);
         cuentas.save(cuenta);
 
-        return new RegistroOngResponse(ong.getId(), ong.getNombre(), ong.getCuit(), false, username,
+        //este return es medio raro porque devuelve el ID pero para el swagger esta bueno
+        return new RegistroOngResponse(ong.getId(), ong.getNombre(), ong.getCuit(), ong.isHabilitada(), username,
                 "ONG registrada. Queda pendiente de habilitacion por el Sistema Nacional.");
     }
 }

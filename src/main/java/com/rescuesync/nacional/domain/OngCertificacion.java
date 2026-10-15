@@ -1,15 +1,22 @@
 package com.rescuesync.nacional.domain;
 
 import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.time.LocalDate;
 
 @Entity
 @Table(name = "ong_certificacion",
         uniqueConstraints = @UniqueConstraint(name = "uk_ong_certificacion", columnNames = {"ong_id", "certificacion_id"}))
+@Getter
+@Setter
 public class OngCertificacion {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Setter(AccessLevel.NONE)
     private Long id;
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
@@ -35,10 +42,4 @@ public class OngCertificacion {
     public boolean vigente(LocalDate hoy) {
         return vigenteHasta == null || !vigenteHasta.isBefore(hoy);
     }
-
-    public Long getId() { return id; }
-    public Ong getOng() { return ong; }
-    public Certificacion getCertificacion() { return certificacion; }
-    public LocalDate getVigenteHasta() { return vigenteHasta; }
-    public void setVigenteHasta(LocalDate vigenteHasta) { this.vigenteHasta = vigenteHasta; }
 }

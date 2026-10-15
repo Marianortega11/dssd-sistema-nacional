@@ -41,27 +41,33 @@ Liberación y cierre también son idempotentes. Hay un test con 10 hilos (`Concu
 
 ## Usuarios de demo (seed)
 
-| Usuario | Rol | Contraseña (por defecto) |
+| Usuario | Rol | Contraseña |
 |---|---|---|
-| `admin` | ADMIN | `admin12345` (`ADMIN_PASSWORD`) |
-| `bonita` | SISTEMA (usar desde Bonita) | `bonita12345` (`SISTEMA_PASSWORD`) |
+| `admin` | ADMIN | la definida en `ADMIN_PASSWORD` |
+| `bonita` | SISTEMA (usar desde Bonita) | la definida en `SISTEMA_PASSWORD` |
 | `cruzroja` (alias `april.sanchez`) | ONG | `demo12345` (`DEMO_PASSWORD`) |
 | `bomberos` (alias `helen.kelly`) | ONG | `demo12345` |
 
-En producción definir `JWT_SECRET`, `ADMIN_PASSWORD` y `SISTEMA_PASSWORD` (el blueprint de Render los genera) y, si no se
-quieren ONGs de ejemplo, `SEED_DEMO=false`.
+La app no tiene valores por defecto para `DB_PASSWORD`, `JWT_SECRET`, `ADMIN_PASSWORD` ni `SISTEMA_PASSWORD`: si falta
+alguno no arranca. En Render el blueprint los genera (se ven en **Environment** del servicio). Si no se quieren ONGs de
+ejemplo, `SEED_DEMO=false`.
 
 ## Ejecutar
 
 ```bash
-# Local con Docker (API en http://localhost:8090/swagger-ui.html)
+# 1. Crear el .env a partir del ejemplo y completar los valores (no se sube al repo)
+cp .env.example .env
+
+# 2. Local con Docker (API en http://localhost:8090/swagger-ui.html)
 docker compose up --build
 
 # Tests (usan H2 en modo PostgreSQL)
 ./mvnw test
 ```
 
-Variables: `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, `DB_PASSWORD`, `JWT_SECRET` (≥32 caracteres), `JWT_EXPIRATION_MINUTES`, `PORT`.
+Variables obligatorias: `DB_PASSWORD`, `JWT_SECRET` (≥32 caracteres), `ADMIN_PASSWORD`, `SISTEMA_PASSWORD`.
+Opcionales: `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, `JWT_EXPIRATION_MINUTES`, `DEMO_PASSWORD`, `SEED_DEMO`, `PORT`.
+Para correr sin Docker (`./mvnw spring-boot:run`) hay que definirlas en la terminal o en el IDE: Spring no lee el `.env`.
 
 ## Despliegue en Render
 
